@@ -75,7 +75,7 @@
             font-family: 'Montserrat', sans-serif; 
             font-size: 14px;
             line-height: 1.5;
-            max-width: 400px; 
+            width: 500px !important;
         }
 
         .esriPopup .esriPopupWrapper {
@@ -169,11 +169,12 @@
 
                     on(earthquakes, "click", function (evt) {
                         var attributes = evt.graphic.attributes;
+                        console.log(attributes);
                         var content = `
                             <div class="custom-popup">
                                 <b>Magnitude:</b> ${attributes.magnitude} <br/>
-                                <b>Location:</b> ${attributes.places} <br/>
-                                <b>Date:</b> ${new Date(attributes.time).toLocaleString()}
+                                <b>Location:</b> ${attributes.name} <br/>
+                                <b>Date:</b> ${new Date(attributes.date_).toLocaleString()}
                             </div>
                         `;
                         map.infoWindow.setContent(content);
