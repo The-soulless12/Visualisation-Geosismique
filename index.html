@@ -76,16 +76,27 @@
             font-size: 14px;
             line-height: 1.5;
             width: 500px !important;
+            max-width: 500px;
         }
 
         .esriPopup .esriPopupWrapper {
             border-radius: 15px;
         }
 
-        .custom-popup {
+        .esriPopup .action.zoomTo span {
+            display: none !important;
+        }
+
+        .esriSimpleSlider {
+            bottom: 10px !important;
+            left: 10px !important;
+            max-width: 30px !important;
+        }
+
+        #infoBox {
             position: absolute;
-            top: -300px;
-            left: 50%;
+            top: 20px;
+            left: 13.5%;
             transform: translateX(-50%);
             background: white;
             border: 2px solid black;
@@ -94,28 +105,9 @@
             font-size: 14px;
             line-height: 1.5;
             padding: 10px;
+            display: none; 
             z-index: 10000;
-            animation: slideDown 1s ease-out forwards;
-        }
-
-        @keyframes slideDown {
-            0% {
-                top: -200px;
-            }
-            100% {
-                top: 25px;
-            }
-        }
-
-        .esriSimpleSlider {
-            bottom: 10px !important;
-            top: auto !important;      
-            left: 3%;
-            transform: translateX(-50%);
-        }
-
-        .esriPopup .action.zoomTo span {
-            display: none !important;
+            width: 300px;
         }
     </style>
 
@@ -126,14 +118,13 @@
         require([
             "esri/map",
             "esri/layers/FeatureLayer",
-            "esri/dijit/PopupTemplate",
             "dojo/_base/array",
             "dojo/dom",
             "dojo/number",
             "dojo/on",
             "dojo/parser",
             "dojo/ready"
-        ], function (Map, FeatureLayer, PopupTemplate, array, dom, number, on, parser, ready) {
+        ], function (Map, FeatureLayer, array, dom, number, on, parser, ready) {
             parser.parse();
 
             var map, layer, quantize;
@@ -144,7 +135,8 @@
                     center: [-74.0060, 40.7128],
                     zoom: 6,
                     minZoom: 3, 
-                    maxZoom: 15
+                    maxZoom: 15,
+                    sliderPosition: "bottom-right" 
                 });
                 addEarthquakes();
             });
@@ -168,18 +160,26 @@
                     });
 
                     on(earthquakes, "click", function (evt) {
-                        var attributes = evt.graphic.attributes;
-                        console.log(attributes);
-                        var content = `
-                            <div class="custom-popup">
-                                <b>Magnitude:</b> ${attributes.magnitude} <br/>
-                                <b>Location:</b> ${attributes.name} <br/>
-                                <b>Date:</b> ${new Date(attributes.date_).toLocaleString()}
-                            </div>
-                        `;
-                        map.infoWindow.setContent(content);
-                        map.infoWindow.setTitle("Earthquake Details");
-                        map.infoWindow.show(evt.mapPoint);
+                        var graphic = evt.graphic;
+                        var attributes = graphic.attributes;
+
+                        if (evt.target.tagName === 'path') {
+                            var infoBox = dom.byId("infoBox");
+                            var content = `
+                                <b>Détails du Séisme</b> <br/>
+                                <b>Magnitude :</b> ${attributes.magnitude} <br/>
+                                <b>Localisation :</b> ${attributes.name} <br/>
+                                <b>Date et heure :</b> ${new Date(attributes.date_).toLocaleString()}
+                            `;
+                            infoBox.innerHTML = content;
+                            infoBox.style.display = "block"; 
+                        }
+                    });
+
+                    on(map, "click", function (evt) {
+                        if (evt.target.tagName !== 'path') {
+                            dom.byId("infoBox").style.display = "none"; 
+                        }
                     });
 
                     createLegend();
@@ -227,6 +227,9 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="infoBox">
 </div>
 </body>
 </html>
