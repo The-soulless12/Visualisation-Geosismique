@@ -11,7 +11,7 @@ Carte interactive, utilisant l'API ArcGIS et D3.js, affichant les tremblements d
 - index.html : Contient le code principal pour l'interface utilisateur.
 - API ArcGIS : Fournit les services de cartes de base et de données.
   
-# Prérequis
+# Prérequis 
 - Navigateur internet.
 - La librairie D3.js.
 - L'API ArcGIS.
